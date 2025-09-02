@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'prayertime.dart';
+import 'prayertime_screen.dart';
 
 void main() {
   runApp(PrayerTimesApp());
