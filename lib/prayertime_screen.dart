@@ -27,7 +27,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> with TickerProvid
   void initState() {
     super.initState();
     _animationController = AnimationController(
-      duration: Duration(milliseconds: 1000),
+      duration: Duration(milliseconds: 800),
       vsync: this,
     );
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
@@ -160,7 +160,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> with TickerProvid
             colors: [
               Color(0xFF0F172A),
               Color(0xFF1E293B),
-              Color(0xFF334155),
+              Color(0xFF2D3748),
             ],
           ),
         ),
@@ -177,11 +177,9 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> with TickerProvid
                       physics: AlwaysScrollableScrollPhysics(),
                       slivers: [
                         SliverToBoxAdapter(child: _buildHeader()),
-                        SliverToBoxAdapter(child: _buildPrayerCardsRow()),
-                        SliverToBoxAdapter(child: _buildPrayersList()),
-                        SliverToBoxAdapter(
-                          child: SizedBox(height: 20),
-                        ),
+                        SliverToBoxAdapter(child: _buildNextPrayerSection()),
+                        SliverToBoxAdapter(child: _buildPrayerSchedule()),
+                        SliverToBoxAdapter(child: SizedBox(height: 24)),
                       ],
                     ),
                   ),
@@ -197,28 +195,29 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> with TickerProvid
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            width: 80,
-            height: 80,
+            width: 64,
+            height: 64,
             child: CircularProgressIndicator(
               color: Color(0xFF3B82F6),
               strokeWidth: 3,
             ),
           ),
-          SizedBox(height: 24),
+          SizedBox(height: 16),
           Text(
             'Loading Prayer Times',
             style: TextStyle(
               color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
+              fontSize: 18,
+              fontWeight: FontWeight.w500,
             ),
           ),
-          SizedBox(height: 8),
+          SizedBox(height: 4),
           Text(
             'Please wait...',
             style: TextStyle(
               color: Colors.white70,
-              fontSize: 16,
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
             ),
           ),
         ],
@@ -229,515 +228,228 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> with TickerProvid
   Widget _buildHeader() {
     final now = DateTime.now();
     final dateString = '${getMonthName(now.month)} ${now.day}, ${now.year}';
-    
+
     return Container(
-      padding: EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Prayer Times',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: -0.5,
-                    ),
-                  ),
-                  SizedBox(height: 4),
-                  Text(
-                    dateString,
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
+              Text(
+                'Prayer Times',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: -0.4,
+                ),
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    currentTime,
-                    style: TextStyle(
-                      color: Color(0xFF3B82F6),
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      fontFeatures: [FontFeature.tabularFigures()],
-                    ),
-                  ),
-                  SizedBox(height: 4),
-                  GestureDetector(
-                    onTap: _showLocationDialog,
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: Colors.white.withOpacity(0.2),
-                          width: 1,
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.location_on,
-                            color: Color(0xFF3B82F6),
-                            size: 16,
-                          ),
-                          SizedBox(width: 4),
-                          Text(
-                            '$city, $country',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          SizedBox(width: 4),
-                          Icon(
-                            Icons.edit,
-                            color: Colors.white70,
-                            size: 14,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
+              SizedBox(height: 4),
+              Text(
+                dateString,
+                style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                ),
               ),
             ],
+          ),
+          GestureDetector(
+            onTap: _showLocationDialog,
+            child: Container(
+              constraints: BoxConstraints(maxWidth: 140),
+              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.2),
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.location_on_outlined,
+                    color: Color(0xFF3B82F6),
+                    size: 18,
+                  ),
+                  SizedBox(width: 6),
+                  Flexible(
+                    child: Text(
+                      '$city, $country',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
+                  ),
+                  SizedBox(width: 6),
+                  Icon(
+                    Icons.edit_outlined,
+                    color: Colors.white70,
+                    size: 16,
+                  ),
+                ],
+              ),
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildCurrentPrayerCard() {
+  Widget _buildNextPrayerSection() {
     final currentPrayer = getCurrentPrayer(prayerData);
     final currentPrayerTime = prayerData?['data']?['timings']?[currentPrayer] ?? '';
-    final endTime = getCurrentPrayerEndTime(prayerData, currentPrayer);
+    final nextPrayer = getNextPrayer(prayerData);
+    final nextPrayerTime = prayerData?['data']?['timings']?[nextPrayer] ?? '';
+    final countdown = formatCountdown(_remainingMinutes, _remainingSeconds);
 
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-      child: Container(
-        padding: EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF3B82F6),
-              Color(0xFF2563EB),
-              Color(0xFF1D4ED8),
-            ],
-          ),
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Color(0xFF3B82F6).withOpacity(0.4),
-              blurRadius: 20,
-              offset: Offset(0, 8),
-            ),
+      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFF3B82F6),
+            Color(0xFF2563EB),
           ],
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Color(0xFF3B82F6).withOpacity(0.3),
+            blurRadius: 10,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(
+                      getPrayerIcon(currentPrayer),
+                      color: Colors.white,
+                      size: 20,
+                    ),
                   ),
-                  child: Icon(
-                    getPrayerIcon(currentPrayer),
-                    color: Colors.white,
-                    size: 20,
+                  SizedBox(width: 12),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Now: $currentPrayer',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      )],
                   ),
-                ),
-                SizedBox(width: 12),
-                Text(
-                  'Current Prayer',
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.9),
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 16),
-            Text(
-              currentPrayer,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-                letterSpacing: -1,
+                ],
               ),
-            ),
-            SizedBox(height: 8),
-            Text(
-              currentPrayerTime,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 24,
-                fontWeight: FontWeight.w600,
-                fontFeatures: [FontFeature.tabularFigures()],
-              ),
-            ),
-            if (endTime.isNotEmpty) ...[
-              SizedBox(height: 12),
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  'Ends at $endTime',
+                  currentPrayerTime,
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 14,
+                    fontSize: 13,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
               ),
             ],
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNextPrayerCard() {
-    final nextPrayer = getNextPrayer(prayerData);
-    final nextPrayerTime = prayerData?['data']?['timings']?[nextPrayer] ?? '';
-
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-      padding: EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Color(0xFF1E293B),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: Colors.white.withOpacity(0.1),
-          width: 1,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(
-                  getPrayerIcon(nextPrayer),
-                  color: Colors.white70,
-                  size: 20,
-                ),
-              ),
-              SizedBox(width: 12),
-              Text(
-                'Next Prayer',
-                style: TextStyle(
-                  color: Colors.white70,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
           ),
-          SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    nextPrayer,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: -0.5,
+          SizedBox(height: 12),
+          Container(
+            padding: EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      getPrayerIcon(nextPrayer),
+                      color: Colors.white70,
+                      size: 18,
                     ),
+                    SizedBox(width: 8),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Next: $nextPrayer',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        ),
+                        Text(
+                          nextPrayerTime,
+                          style: TextStyle(
+                            color: Colors.white70,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            fontFeatures: [FontFeature.tabularFigures()],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  SizedBox(height: 4),
-                  Text(
-                    nextPrayerTime,
+                  child: Text(
+                    countdown,
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 20,
+                      fontSize: 14,
                       fontWeight: FontWeight.w600,
                       fontFeatures: [FontFeature.tabularFigures()],
                     ),
                   ),
-                ],
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                decoration: BoxDecoration(
-                  color: Color(0xFF3B82F6).withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: Color(0xFF3B82F6).withOpacity(0.3),
-                    width: 1,
-                  ),
                 ),
-                child: Column(
-                  children: [
-                    Text(
-                      'TIME LEFT',
-                      style: TextStyle(
-                        color: Colors.white70,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 1,
-                      ),
-                    ),
-                    SizedBox(height: 4),
-                    Text(
-                      formatCountdown(_remainingMinutes, _remainingSeconds),
-                      style: TextStyle(
-                        color: Color(0xFF3B82F6),
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        fontFeatures: [FontFeature.tabularFigures()],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPrayerCardsRow() {
-    final currentPrayer = getCurrentPrayer(prayerData);
-    final currentPrayerTime = prayerData?['data']?['timings']?[currentPrayer] ?? '';
-    final endTime = getCurrentPrayerEndTime(prayerData, currentPrayer);
-    final nextPrayer = getNextPrayer(prayerData);
-    final nextPrayerTime = prayerData?['data']?['timings']?[nextPrayer] ?? '';
-
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-      child: Row(
-        children: [
-          Expanded(
-            child: Container(
-              padding: EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Color(0xFF3B82F6),
-                    Color(0xFF2563EB),
-                    Color(0xFF1D4ED8),
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Color(0xFF3B82F6).withOpacity(0.4),
-                    blurRadius: 20,
-                    offset: Offset(0, 8),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          padding: EdgeInsets.all(6),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Icon(
-                            getPrayerIcon(currentPrayer),
-                            color: Colors.white,
-                            size: 16,
-                          ),
-                        ),
-                        SizedBox(width: 8),
-                        Text(
-                          'Current',
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.9),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 12),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        currentPrayer,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: -0.5,
-                        ),
-                      ),
-                      Text(
-                        currentPrayerTime,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          fontFeatures: [FontFeature.tabularFigures()],
-                        ),
-                      ),
-                    ],
-                  ),
-                  if (endTime.isNotEmpty) ...[
-                    SizedBox(height: 8),
-                    Center(
-                      child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          'Until $endTime',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-          ),
-          SizedBox(width: 16),
-          Expanded(
-            child: Container(
-              padding: EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Color(0xFF1E293B),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: Colors.white.withOpacity(0.1),
-                  width: 1,
-                ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          padding: EdgeInsets.all(6),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Icon(
-                            getPrayerIcon(nextPrayer),
-                            color: Colors.white70,
-                            size: 16,
-                          ),
-                        ),
-                        SizedBox(width: 8),
-                        Text(
-                          'Next',
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 12),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        nextPrayer,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: -0.5,
-                        ),
-                      ),
-                      Text(
-                        nextPrayerTime,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          fontFeatures: [FontFeature.tabularFigures()],
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 8),
-                  Center(
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: Color(0xFF3B82F6).withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: Color(0xFF3B82F6).withOpacity(0.3),
-                          width: 1,
-                        ),
-                      ),
-                      child: Text(
-                        formatCountdown(_remainingMinutes, _remainingSeconds),
-                        style: TextStyle(
-                          color: Color(0xFF3B82F6),
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                          fontFeatures: [FontFeature.tabularFigures()],
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              ],
             ),
           ),
         ],
@@ -745,7 +457,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> with TickerProvid
     );
   }
 
-  Widget _buildPrayersList() {
+  Widget _buildPrayerSchedule() {
     if (prayerData == null || prayerData!['data'] == null) return Container();
 
     final timings = prayerData!['data']['timings'] as Map<String, dynamic>?;
@@ -762,117 +474,107 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> with TickerProvid
     final currentPrayer = getCurrentPrayer(prayerData);
 
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-            child: Text(
-              'Today\'s Schedule',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                letterSpacing: -0.3,
-              ),
+          Text(
+            'Today\'s Schedule',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              letterSpacing: -0.3,
             ),
           ),
           SizedBox(height: 8),
-          ...prayers.asMap().entries.map((entry) {
-            final prayer = entry.value;
-            final isCurrentPrayer = prayer['name'] == currentPrayer;
-
+          ...prayers.map((prayer) {
+            final isCurrent = prayer['name'] == currentPrayer;
             return Container(
-              margin: EdgeInsets.only(bottom: 6),
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              margin: EdgeInsets.only(bottom: 8),
+              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 15),
+              constraints: BoxConstraints(minHeight: 65),
               decoration: BoxDecoration(
-                color: isCurrentPrayer 
-                    ? Color(0xFF3B82F6).withOpacity(0.1)
-                    : Color(0xFF1E293B),
-                borderRadius: BorderRadius.circular(16),
+                color: isCurrent ? Color(0xFF3B82F6).withOpacity(0.1) : Color(0xFF1E293B),
+                borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: isCurrentPrayer 
-                      ? Color(0xFF3B82F6).withOpacity(0.3)
-                      : Colors.white.withOpacity(0.08),
+                  color: isCurrent ? Color(0xFF3B82F6).withOpacity(0.3) : Colors.white.withOpacity(0.1),
                   width: 1,
                 ),
               ),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: isCurrentPrayer 
-                          ? Color(0xFF3B82F6).withOpacity(0.2)
-                          : Colors.white.withOpacity(0.08),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Icon(
-                      getPrayerIcon(prayer['name'] as String),
-                      color: isCurrentPrayer 
-                          ? Color(0xFF3B82F6)
-                          : Colors.white70,
-                      size: 20,
-                    ),
-                  ),
-                  SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          prayer['name'] as String,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        SizedBox(height: 1),
-                        Text(
-                          prayer['label'] as String,
-                          style: TextStyle(
-                            color: Colors.white60,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
                   Row(
                     children: [
-                      Text(
-                        prayer['time'] as String,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          fontFeatures: [FontFeature.tabularFigures()],
+                      Container(
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: isCurrent ? Color(0xFF3B82F6).withOpacity(0.2) : Colors.white.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Icon(
+                          getPrayerIcon(prayer['name'] as String),
+                          color: isCurrent ? Color(0xFF3B82F6) : Colors.white70,
+                          size: 20,
                         ),
                       ),
-                      if (isCurrentPrayer) ...[
-                        SizedBox(width: 8),
-                        Container(
-                          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                          decoration: BoxDecoration(
-                            color: Color(0xFF3B82F6),
-                            borderRadius: BorderRadius.circular(20),
+                      SizedBox(width: 12),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                prayer['name'] as String,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
+                              if (isCurrent) ...[
+                                SizedBox(width: 8),
+                                Container(
+                                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: Color(0xFF3B82F6),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Text(
+                                    'Now now',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ],
                           ),
-                          child: Text(
-                            'NOW',
+                          Text(
+                            prayer['label'] as String,
                             style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 0.5,
+                              color: Colors.white60,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w400,
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ],
+                  ),
+                  Text(
+                    prayer['time'] as String,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      fontFeatures: [FontFeature.tabularFigures()],
+                    ),
                   ),
                 ],
               ),
@@ -882,4 +584,5 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> with TickerProvid
       ),
     );
   }
+
 }
