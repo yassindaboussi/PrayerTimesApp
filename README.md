@@ -18,7 +18,7 @@ A beautiful and intuitive Flutter application that displays Islamic prayer times
 
 | Home Screen | Location Selection |
 |-------------|------------------|
-| ![Home](assets/screenshots/screen1.jpg) | ![Pending](assets/screenshots/screen2.jpg) |
+| <img src="assets/screenshots/screen1.jpg" width="250"/> | <img src="assets/screenshots/screen2.jpg" width="250"/> |
 
 ## 🏗️ Project Structure
 
