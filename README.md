@@ -2,10 +2,6 @@
 
 A beautiful and intuitive Flutter application that displays Islamic prayer times for any location worldwide. The app features a modern UI with smooth animations and real-time prayer time updates.
 
-<div align="center">
-  <img src="assets/screenshots/app_preview.jpg" alt="App Preview" width="250"/>
-</div>
-
 ## ✨ Features
 
 - 🕌 Accurate prayer times using the Aladhan API
@@ -17,6 +13,24 @@ A beautiful and intuitive Flutter application that displays Islamic prayer times
 - 📱 Responsive design for all screen sizes
 - 🌙 Dark theme by default
 - 📍 Save your favorite locations
+
+## 📱 Screenshots
+
+| Home Screen | Location Selection |
+|-------------|------------------|
+| ![Home](assets/screenshots/screen1.jpg) | ![Pending](assets/screenshots/screen2.jpg) |
+
+## 🏗️ Project Structure
+
+```
+lib/
+├── main.dart              # App entry point
+├── prayertime_screen.dart # Main screen with prayer times
+├── utils/
+│   └── prayer_utils.dart  # Utility functions
+└── widgets/
+    └── location_selection_dialog.dart # Location selection UI
+```
 
 ## 🚀 Getting Started
 
@@ -49,25 +63,6 @@ A beautiful and intuitive Flutter application that displays Islamic prayer times
 - `http`: For making API requests to the Aladhan API
 - `flutter_lints`: For code quality and style
 - `cupertino_icons`: For iOS-style icons
-
-## 📱 Screenshots
-
-<div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
-  <img src="assets/screenshots/screen1.jpg" alt="Home Screen" width="200"/>
-  <img src="assets/screenshots/screen2.jpg" alt="Location Selection" width="200"/>
-</div>
-
-## 🏗️ Project Structure
-
-```
-lib/
-├── main.dart              # App entry point
-├── prayertime_screen.dart # Main screen with prayer times
-├── utils/
-│   └── prayer_utils.dart  # Utility functions
-└── widgets/
-    └── location_selection_dialog.dart # Location selection UI
-```
 
 ## 🌐 API
 
